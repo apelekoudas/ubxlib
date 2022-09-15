@@ -66,6 +66,8 @@
 #include "u_gnss_msg.h"
 #include "u_gnss_private.h"
 
+#include "u_log_ram.h"
+
 /* ----------------------------------------------------------------
  * COMPILE-TIME MACROS
  * -------------------------------------------------------------- */
@@ -208,6 +210,7 @@ static int32_t matchUbxMessageHeader(const char *pBuffer, size_t size,
                 if (*pInput == 0x62) {
                     // Got second byte of header, increment count
                     headerByteCount++;
+                    uLogRam(U_LOG_RAM_EVENT_matchUbxMessageHeader0, 0);
                 } else {
                     // Not a valid message, start again
                     headerByteCount = 0;
@@ -216,6 +219,7 @@ static int32_t matchUbxMessageHeader(const char *pBuffer, size_t size,
             case 2:
                 // Got message class, store it
                 headerByteCount++;
+                uLogRam(U_LOG_RAM_EVENT_matchUbxMessageHeader1, *pInput);
                 if ((messageClass == U_GNSS_UBX_MESSAGE_CLASS_ALL) ||
                     (messageClass == *pInput)) {
                     messageClass = *pInput;
@@ -225,6 +229,7 @@ static int32_t matchUbxMessageHeader(const char *pBuffer, size_t size,
             case 3:
                 // Got message ID, store it
                 headerByteCount++;
+                uLogRam(U_LOG_RAM_EVENT_matchUbxMessageHeader2, *pInput);
                 if ((messageId == U_GNSS_UBX_MESSAGE_ID_ALL) ||
                     (messageId == *pInput)) {
                     messageId = *pInput;
@@ -368,6 +373,7 @@ static int32_t sendMessageStream(int32_t streamHandle,
         uPortLog(".\n");
     }
 
+    uLogRam(U_LOG_RAM_EVENT_sendMessageStream, errorCodeOrSentLength);
     return errorCodeOrSentLength;
 }
 
@@ -401,6 +407,7 @@ static int32_t receiveUbxMessageStream(uGnssPrivateInstance_t *pInstance,
                                                              pInstance->ringBufferReadHandlePrivate,
                                                              &pBuffer, 0,
                                                              timeoutMs, NULL);
+        uLogRam(U_LOG_RAM_EVENT_receiveUbxMessageStream, errorCodeOrLength);
         if (errorCodeOrLength >= U_UBX_PROTOCOL_OVERHEAD_LENGTH_BYTES) {
             // Convert uGnssPrivateMessageId_t into uGnssPrivateUbxReceiveMessage_t
             pResponse->cls = privateMessageId.id.ubx >> 8;
@@ -1252,6 +1259,7 @@ int32_t uGnssPrivateStreamDecodeRingBuffer(uGnssPrivateInstance_t *pInstance,
                 break;
         }
 
+        uLogRam(U_LOG_RAM_EVENT_uGnssPrivateStreamDecodeRingBuffer0, ubxId);
         do {
             // Fill our local buffer from the ring buffer but using a peek
             // so as not to move the read pointer on
@@ -1291,6 +1299,8 @@ int32_t uGnssPrivateStreamDecodeRingBuffer(uGnssPrivateInstance_t *pInstance,
                 default:
                     break;
             }
+            uLogRam(U_LOG_RAM_EVENT_uGnssPrivateStreamDecodeRingBuffer1, errorCodeOrLength);
+            uLogRam(U_LOG_RAM_EVENT_uGnssPrivateStreamDecodeRingBuffer2, discardSize);
             // Discard from the ring buffer, populating *pDiscard
             // with any amount left over to be discarded by the caller
             *pDiscard += discardSize - uRingBufferReadHandle(&(pInstance->ringBuffer),
@@ -1612,6 +1622,7 @@ int32_t uGnssPrivateReceiveStreamMessage(uGnssPrivateInstance_t *pInstance,
                                                                            pPrivateMessageId,
                                                                            &discardSize,
                                                                            &state);
+                    uLogRam(U_LOG_RAM_EVENT_uGnssPrivateReceiveStreamMessage1, errorCodeOrLength);
                     if (errorCodeOrLength > 0) {
                         if (*ppBuffer == NULL) {
                             // The caller didn't give us any memory; allocate the right
@@ -1636,6 +1647,7 @@ int32_t uGnssPrivateReceiveStreamMessage(uGnssPrivateInstance_t *pInstance,
                                                                                  readHandle,
                                                                                  *ppBuffer,
                                                                                  errorCodeOrLength, y);
+                            uLogRam(U_LOG_RAM_EVENT_uGnssPrivateReceiveStreamMessage2, errorCodeOrLength);
                         } else {
                             discardSize = errorCodeOrLength;
                             errorCodeOrLength = (int32_t) U_ERROR_COMMON_NO_MEMORY;

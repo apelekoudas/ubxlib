@@ -66,6 +66,8 @@
 
 #include "u_gnss_test_private.h"
 
+#include "u_log_ram.h"
+
 /* ----------------------------------------------------------------
  * COMPILE-TIME MACROS
  * -------------------------------------------------------------- */
@@ -359,6 +361,10 @@ U_PORT_TEST_FUNCTION("[gnssPos]", "gnssPosPos")
 
         U_PORT_TEST_ASSERT(gGnssHandle == gnssHandle);
         U_TEST_PRINT_LINE("asynchonous API received error code %d.", gErrorCode);
+        if (gErrorCode != 0) {
+            uLogRamPrint();
+            uPortTaskBlock(1000);
+        }
         U_PORT_TEST_ASSERT(gErrorCode == 0);
         U_TEST_PRINT_LINE("position establishment took %d second(s).",
                           (int32_t) (uPortGetTickTimeMs() - startTime) / 1000);

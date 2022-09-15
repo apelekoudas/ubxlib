@@ -38,6 +38,8 @@
 
 #include "u_port_private.h"  // Down here 'cos it needs GPIO_TypeDef
 
+#include "u_log_ram.h"
+
 /* This code uses the LL API as otherwise we have to keep
  * an entire structure of type I2C_HandleTypeDef in memory
  * for no very good reason.
@@ -262,6 +264,7 @@ static bool waitTransmitOk(I2C_TypeDef *pReg, uint32_t flag,
             SET_BIT(pReg->CR1, I2C_CR1_STOP);
             U_PORT_HAL_I2C_CLEAR_FLAG(pReg, I2C_FLAG_AF);
             ackFailed = true;
+            uLogRam(U_LOG_RAM_EVENT_i2c6, flag);
         }
     }
 
@@ -334,6 +337,8 @@ static int32_t sendAddress(I2C_TypeDef *pReg, uint16_t address,
                     errorCode = (int32_t) U_ERROR_COMMON_SUCCESS;
                 }
             }
+        } else {
+            uLogRam(U_LOG_RAM_EVENT_i2c5, address);
         }
     }
 
@@ -349,6 +354,7 @@ static int32_t send(I2C_TypeDef *pReg, uint16_t address,
 {
     int32_t errorCode;
 
+    uLogRam(U_LOG_RAM_EVENT_i2c1, size);
     errorCode = sendAddress(pReg, address, timeoutMs, false, pIgnoreBusy);
     if (errorCode == 0) {
         // Clear the ADDR flag
@@ -360,26 +366,41 @@ static int32_t send(I2C_TypeDef *pReg, uint16_t address,
                 pReg->DR = *pData;
                 pData++;
                 size--;
+                uLogRam(U_LOG_RAM_EVENT_i2c10, address);
+                uLogRam(U_LOG_RAM_EVENT_i2c15, pReg->SR2);
                 if ((U_PORT_HAL_I2C_GET_FLAG(pReg, I2C_FLAG_BTF) == SET) && (size > 0)) {
                     // Write another byte
                     pReg->DR = *pData;
                     pData++;
                     size--;
+                    uLogRam(U_LOG_RAM_EVENT_i2c9, address);
                 }
                 // Wait for BTF flag to be set
                 if (!waitTransmitOk(pReg, I2C_FLAG_BTF, timeoutMs)) {
                     errorCode = (int32_t) U_ERROR_COMMON_NOT_RESPONDING;
+                    uLogRam(U_LOG_RAM_EVENT_i2c4, address);
+                    if (pReg->CR1 & 0x80) {
+                        uLogRam(U_LOG_RAM_EVENT_i2c14, pReg->CR1);
+                    }
+                    uLogRam(U_LOG_RAM_EVENT_i2c15, pReg->SR2);
+                } else {
+                    uLogRam(U_LOG_RAM_EVENT_i2c8, address);
                 }
             } else {
                 errorCode = (int32_t) U_ERROR_COMMON_NOT_RESPONDING;
+                uLogRam(U_LOG_RAM_EVENT_i2c3, address);
             }
         }
         if (errorCode == 0) {
             if (!noStop) {
                 // Generate stop
                 SET_BIT(pReg->CR1, I2C_CR1_STOP);
+            } else {
+                uLogRam(U_LOG_RAM_EVENT_i2c7, address);
             }
         }
+    } else {
+        uLogRam(U_LOG_RAM_EVENT_i2c2, errorCode);
     }
 
     return errorCode;
@@ -395,6 +416,7 @@ static int32_t receive(I2C_TypeDef *pReg, uint16_t address,
     size_t bytesToReceive = size;
     bool keepGoing = true;
 
+    uLogRam(U_LOG_RAM_EVENT_i2c11, size);
     errorCodeOrLength = sendAddress(pReg, address, timeoutMs, true, pIgnoreBusy);
     if (errorCodeOrLength == 0) {
         // The only thing that can go wrong from here on is a timeout
@@ -439,6 +461,8 @@ static int32_t receive(I2C_TypeDef *pReg, uint16_t address,
                         *pData = (char) pReg->DR;
                         pData++;
                         bytesToReceive--;
+                    } else {
+                        uLogRam(U_LOG_RAM_EVENT_i2c13, 1);
                     }
                 } else if (bytesToReceive == 2) { // Two bytes
                     // Wait until BTF flag is set
@@ -454,6 +478,8 @@ static int32_t receive(I2C_TypeDef *pReg, uint16_t address,
                         *pData = (char) pReg->DR;
                         pData++;
                         bytesToReceive--;
+                    } else {
+                        uLogRam(U_LOG_RAM_EVENT_i2c13, 2);
                     }
                 } else { // Last three bytes
                     // Wait until BTF flag is set
@@ -478,7 +504,11 @@ static int32_t receive(I2C_TypeDef *pReg, uint16_t address,
                             *pData = (char) pReg->DR;
                             pData++;
                             bytesToReceive--;
+                        } else {
+                            uLogRam(U_LOG_RAM_EVENT_i2c13, 4);
                         }
+                    } else {
+                        uLogRam(U_LOG_RAM_EVENT_i2c13, 3);
                     }
                 }
             } else {
@@ -489,6 +519,8 @@ static int32_t receive(I2C_TypeDef *pReg, uint16_t address,
                     *pData = (char) pReg->DR;
                     pData++;
                     bytesToReceive--;
+                } else {
+                    uLogRam(U_LOG_RAM_EVENT_i2c13, 5);
                 }
                 if (U_PORT_HAL_I2C_GET_FLAG(pReg, I2C_FLAG_BTF) == SET) {
                     // Read the data from DR
@@ -501,6 +533,8 @@ static int32_t receive(I2C_TypeDef *pReg, uint16_t address,
         if (keepGoing) {
             errorCodeOrLength = (int32_t) (size - bytesToReceive);
         }
+    } else {
+        uLogRam(U_LOG_RAM_EVENT_i2c12, errorCodeOrLength);
     }
 
     return errorCodeOrLength;

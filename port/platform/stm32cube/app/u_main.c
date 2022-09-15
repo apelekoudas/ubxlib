@@ -48,6 +48,8 @@
 #include "stm32f4xx.h"
 #include "core_cm4.h"
 
+#include "u_log_ram.h"
+
 /* ----------------------------------------------------------------
  * COMPILE-TIME MACROS
  * -------------------------------------------------------------- */
@@ -93,6 +95,8 @@ static void appTask(void *pParam)
     SCB->SHCSR |= SCB_SHCSR_USGFAULTENA_Msk | SCB_SHCSR_BUSFAULTENA_Msk;
 
     uPortInit();
+
+    U_ASSERT(uLogRamInit(NULL));
 
 #if U_CFG_APP_PIN_C030_ENABLE_3V3 >= 0
     // Enable power to 3V3 rail for the C030 board

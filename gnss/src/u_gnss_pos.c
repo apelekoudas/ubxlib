@@ -53,6 +53,8 @@
 #include "u_gnss_private.h"
 #include "u_gnss_pos.h"
 
+#include "u_log_ram.h"
+
 /* ----------------------------------------------------------------
  * COMPILE-TIME MACROS
  * -------------------------------------------------------------- */
@@ -129,9 +131,11 @@ static int32_t posGet(uGnssPrivateInstance_t *pInstance,
     int32_t y;
     int64_t t = -1;
 
+    uLogRam(U_LOG_RAM_EVENT_posGet1, 0);
     y = uGnssPrivateSendReceiveUbxMessage(pInstance,
                                           0x01, 0x07, NULL, 0,
                                           message, sizeof(message));
+    uLogRam(U_LOG_RAM_EVENT_posGet2, y);
     if (y == sizeof(message)) {
         // Got the correct message body length, process it
         if ((message[11] & 0x03) == 0x03) {
@@ -257,6 +261,7 @@ static void posGetTask(void *pParameter)
     while ((taskParameters.pInstance->posTaskFlags & U_GNSS_POS_TASK_FLAG_KEEP_GOING) &&
            (errorCode == (int32_t) U_ERROR_COMMON_TIMEOUT) &&
            ((uPortGetTickTimeMs() - startTime) / 1000 < U_GNSS_POS_TIMEOUT_SECONDS)) {
+        uLogRam(U_LOG_RAM_EVENT_posGetTask1, 0);
         // Call posGet() to do the work
         errorCode = posGet(taskParameters.pInstance,
                            &latitudeX1e7,
@@ -266,6 +271,7 @@ static void posGetTask(void *pParameter)
                            &speedMillimetresPerSecond,
                            &svs,
                            &timeUtc, false);
+        uLogRam(U_LOG_RAM_EVENT_posGetTask2, errorCode);
         uPortTaskBlock(U_GNSS_POS_CALLBACK_TASK_STACK_DELAY_SECONDS * 1000);
     }
 

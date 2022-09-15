@@ -1,13 +1,33 @@
 /** The strings to match the enum entries in u_log_ram_enum_user.h.
- * Conventionally, errors have a "*" to the left to make them easier
- * to spot.
- *
- * It is a good idea to be verbose here: these strings cost you only
- * flash space, not RAM, make them as readable as possible.
+ * Conventionally, interesting events have a "*" to the left to make
+ * them easier to spot.
  */
-"  interestingThing1 is now this value",
-"* functionBlah1(), thingy() has failed with error code",
-"  functionBlah2() is returning value",
-"  functionBibble1(), about to call doberry()",
-"  functionBibble2(), doberry() returned",
-"* functionBibble3(), timeout"
+"  EVENT_posGetTask1 calling posGet()",
+"  EVENT_posGetTask2 posGet() returned",
+"  EVENT_posGet1 about to send and receive",
+"  EVENT_posGet2 send and receive complete, error code",
+"  EVENT_sendMessageStream is returning error code",
+"  EVENT_receiveUbxMessageStream; uGnssPrivateReceiveStreamMessage()) returned",
+"  EVENT_uGnssPrivateReceiveStreamMessage1; uGnssPrivateStreamDecodeRingBuffer() returned",
+"  EVENT_uGnssPrivateReceiveStreamMessage2; uGnssPrivateStreamReadRingBuffer() returned",
+"  EVENT_uGnssPrivateStreamDecodeRingBuffer0; looking for ubxid",
+"  EVENT_uGnssPrivateStreamDecodeRingBuffer1; decode attempt returned",
+"  EVENT_uGnssPrivateStreamDecodeRingBuffer2: discard size will be",
+"  EVENT_matchUbxMessageHeader0; possible ubx message",
+"  EVENT_matchUbxMessageHeader1: message class",
+"  EVENT_matchUbxMessageHeader2: message ID",
+"  EVENT_i2c1:  TX this many bytes",
+"* EVENT_i2c2:  TX send address returned error code",
+"* EVENT_i2c3:  TX waitTransmitOk() failed",
+"* EVENT_i2c4:  TX wait for BTF flag failed",
+"* EVENT_i2c5:  TX sendAddress() waitFlagOk() failed",
+"* EVENT_i2c6:  TX ack failure in waitTransmitOk() waiting for flag",
+"  EVENT_i2c7:  TX asked to _not_ send stop",
+"  EVENT_i2c8:  TX BTF flag set after waiting, all is good with the world",
+"  EVENT_i2c9:  TX another byte because BTF was set",
+"  EVENT_i2c10: TX sent a byte because TXE is set",
+"  EVENT_i2c11: RX this many bytes",
+"* EVENT_i2c12: RX send address returned error code",
+"* EVENT_i2c13: RX waitFlagOk() failed instance",
+"* EVENT_i2c14: NOSTRETCH is 1",
+"  EVENT_i2c15: BUSY flag is the second bit of this",
