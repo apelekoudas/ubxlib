@@ -95,7 +95,7 @@ int32_t uPortInit()
     uPortOsPrivateInit();
     errorCode = uPortEventQueuePrivateInit();
     if (errorCode == 0) {
-        //errorCode = uPortUartInit();
+        ////errorCode = uPortUartInit();
         errorCode = uPortI2cInit();
     }
     if (errorCode == 0) {
@@ -108,7 +108,7 @@ int32_t uPortInit()
 void uPortDeinit()
 {
     uPortPrivateDeinit();
-    //uPortUartDeinit();
+    ////uPortUartDeinit();
     uPortI2cDeinit();
     uPortEventQueuePrivateDeinit();
     // Workaround for Zephyr thread resource pool bug
