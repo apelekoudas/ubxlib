@@ -118,6 +118,7 @@ int32_t uGnssPwrOn(uDeviceHandle_t gnssHandle)
                 }
             }
 
+            /*
             if (errorCode == 0) {
                 if (pInstance->transportType == U_GNSS_TRANSPORT_AT) {
                     atHandle = (uAtClientHandle_t) pInstance->transportHandle.pAt;
@@ -247,7 +248,7 @@ int32_t uGnssPwrOn(uDeviceHandle_t gnssHandle)
                 // we're not left in a strange state
                 uPortGpioSet(pInstance->pinGnssEnablePower,
                              (int32_t) !pInstance->pinGnssEnablePowerOnState);
-            }
+            }*/
         }
 
         U_PORT_MUTEX_UNLOCK(gUGnssPrivateMutex);
@@ -375,11 +376,11 @@ int32_t uGnssPwrOffBackup(uDeviceHandle_t gnssHandle)
                 //lint -save -e569 Suppress loss of information: OK on all our compilers
                 message[12] = 0xe4; // Wake-up on all sources
                 //lint -restore
-                errorCode = uGnssPrivateSendReceiveUbxMessage(pInstance,
+                errorCode = 0;/*uGnssPrivateSendReceiveUbxMessage(pInstance,
                                                               0x02, 0x41,
                                                               message,
                                                               sizeof(message),
-                                                              NULL, 0);
+                                                              NULL, 0);*/
                 if ((errorCode == 0) && (pInstance->pinGnssEnablePower >= 0)) {
                     errorCode = uPortGpioSet(pInstance->pinGnssEnablePower,
                                              (int32_t) !pInstance->pinGnssEnablePowerOnState);
