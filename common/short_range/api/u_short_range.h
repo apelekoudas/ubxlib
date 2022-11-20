@@ -158,7 +158,7 @@ typedef enum {
 // Stop GCC complaining
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
-#pragma anon_unions
+// #pragma anon_unions
 #pragma GCC diagnostic pop
 #endif
 

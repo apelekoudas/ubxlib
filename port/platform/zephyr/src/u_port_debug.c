@@ -34,6 +34,9 @@
 #include "u_error_common.h"
 
 #include "sys/printk.h"
+#include <zephyr/logging/log.h>
+
+LOG_MODULE_REGISTER(UBX);
 
 /* ----------------------------------------------------------------
  * COMPILE-TIME MACROS
@@ -67,10 +70,13 @@ volatile int32_t gStdoutCounter;
 void uPortLogF(const char *pFormat, ...)
 {
     va_list args;
+    // char buffer[256];
 
-    if (gPortLogOn) {
+    if (gPortLogOn) {        
         va_start(args, pFormat);
-        vprintf(pFormat, args);
+        // vsnprintf (buffer, 256, pFormat, args);
+        // LOG_INF("%s", buffer);
+        vprintk(pFormat, args); // TP changed from vprintf to utilize LOG->SHELL
         va_end(args);
     }
     gStdoutCounter++;

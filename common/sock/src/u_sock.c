@@ -316,6 +316,7 @@
 #include "stdbool.h"
 #include "string.h"        // strlen(), strchr(), strtol()
 #include "stdio.h"         // snprintf()
+#include <sys/_timeval.h>
 #include "sys/time.h"      // mktime() and struct timeval in most cases
 
 #include "u_cfg_sw.h"

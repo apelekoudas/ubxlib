@@ -324,7 +324,7 @@ int32_t uGnssPosGet(uDeviceHandle_t gnssHandle,
 #endif
             startTime = uPortGetTickTimeMs();
             errorCode = (int32_t) U_ERROR_COMMON_TIMEOUT;
-            while ((errorCode == (int32_t) U_ERROR_COMMON_TIMEOUT) &&
+            while (((errorCode != (int32_t) U_ERROR_COMMON_SUCCESS) || (*pSvs == 255)) &&
                    (((pKeepGoingCallback == NULL) &&
                      (uPortGetTickTimeMs() - startTime) / 1000 < U_GNSS_POS_TIMEOUT_SECONDS) ||
                     ((pKeepGoingCallback != NULL) && pKeepGoingCallback(gnssHandle)))) {
@@ -335,7 +335,7 @@ int32_t uGnssPosGet(uDeviceHandle_t gnssHandle,
                                    pAltitudeMillimetres,
                                    pRadiusMillimetres,
                                    pSpeedMillimetresPerSecond,
-                                   pSvs, pTimeUtc, true);
+                                   pSvs, pTimeUtc, false);
             }
         }
 

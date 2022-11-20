@@ -95,10 +95,10 @@ int32_t uGnssPwrOn(uDeviceHandle_t gnssHandle)
 {
     int32_t errorCode = (int32_t) U_ERROR_COMMON_NOT_INITIALISED;
     uGnssPrivateInstance_t *pInstance;
-    uAtClientHandle_t atHandle;
+    // uAtClientHandle_t atHandle;
     // Message buffer for the 120-byte UBX-MON-MSGPP message
-    char message[120] = {0};
-    uint64_t y;
+    // char message[120] = {0};
+    // uint64_t y;
 
     if (gUGnssPrivateMutex != NULL) {
 
@@ -384,6 +384,7 @@ int32_t uGnssPwrOffBackup(uDeviceHandle_t gnssHandle)
                 if ((errorCode == 0) && (pInstance->pinGnssEnablePower >= 0)) {
                     errorCode = uPortGpioSet(pInstance->pinGnssEnablePower,
                                              (int32_t) !pInstance->pinGnssEnablePowerOnState);
+                    //uPortTaskBlock(3 * 1000);    // wait 3 seconds before accepting another power-up command
                 }
             }
         }
