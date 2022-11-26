@@ -34,9 +34,6 @@
 #include "u_error_common.h"
 
 #include "sys/printk.h"
-#include <zephyr/logging/log.h>
-
-LOG_MODULE_REGISTER(UBX);
 
 /* ----------------------------------------------------------------
  * COMPILE-TIME MACROS

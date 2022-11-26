@@ -166,7 +166,8 @@ static int32_t posGet(uGnssPrivateInstance_t *pInstance,
         // to suppress those warnings with -esym(690, message)
         // or even -e(690), hence do it the blunt way
         //lint -save -e690
-        if (message[21] & 0x01) {
+        //// if (message[21] & 0x01) {
+        if (message[20] > 0) {  // TP changed to return a fix even outside target limits
             if (printIt) {
                 uPortLog("U_GNSS_POS: %dD fix achieved.\n", message[20]);
             }
@@ -215,7 +216,9 @@ static int32_t posGet(uGnssPrivateInstance_t *pInstance,
             if (pSpeedMillimetresPerSecond != NULL) {
                 *pSpeedMillimetresPerSecond = y;
             }
-            errorCode = (int32_t) U_ERROR_COMMON_SUCCESS;
+            if (message[21] & 0x01) {   //TP added
+                errorCode = (int32_t) U_ERROR_COMMON_SUCCESS;
+            }
             //lint -restore
         }
     } else {
@@ -324,6 +327,10 @@ int32_t uGnssPosGet(uDeviceHandle_t gnssHandle,
 #endif
             startTime = uPortGetTickTimeMs();
             errorCode = (int32_t) U_ERROR_COMMON_TIMEOUT;
+            if (pSvs != NULL) {
+                *pSvs = 255;  // TP Initialize to "No fox yet"
+            }
+
             while (((errorCode != (int32_t) U_ERROR_COMMON_SUCCESS) || (*pSvs == 255)) &&
                    (((pKeepGoingCallback == NULL) &&
                      (uPortGetTickTimeMs() - startTime) / 1000 < U_GNSS_POS_TIMEOUT_SECONDS) ||
