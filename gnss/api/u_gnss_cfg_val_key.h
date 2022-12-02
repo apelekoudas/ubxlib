@@ -2271,6 +2271,7 @@ typedef enum {
 #define U_GNSS_CFG_VAL_KEY_ID_HW_ANT_SUP_ENGINE_E1               0x20a30054
 #define U_GNSS_CFG_VAL_KEY_ID_HW_ANT_SUP_SHORT_THR_U1            0x20a30055
 #define U_GNSS_CFG_VAL_KEY_ID_HW_ANT_SUP_OPEN_THR_U1             0x20a30056
+#define U_GNSS_CFG_VAL_KEY_ID_HW_RF_LNA_MODE_E1                  0x20a30057
 #define U_GNSS_CFG_VAL_KEY_ID_I2C_ADDRESS_U1                     0x20510001
 #define U_GNSS_CFG_VAL_KEY_ID_I2C_EXTENDEDTIMEOUT_L              0x10510002
 #define U_GNSS_CFG_VAL_KEY_ID_I2C_ENABLED_L                      0x10510003
