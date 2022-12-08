@@ -343,6 +343,7 @@ int32_t uGnssPosGet(uDeviceHandle_t gnssHandle,
                                    pRadiusMillimetres,
                                    pSpeedMillimetresPerSecond,
                                    pSvs, pTimeUtc, false);
+                uPortTaskBlock(900);    //TP added to reduce I2C EMI noise
             }
         }
 

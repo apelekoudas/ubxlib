@@ -1648,7 +1648,7 @@ int32_t uGnssPrivateReceiveStreamMessage(uGnssPrivateInstance_t *pInstance,
 
             if ((receiveSize <= 0) && (timeoutMs > 0)) {
                 // Relax a little while we're waiting for some data
-                uPortTaskBlock(10);
+                uPortTaskBlock(50);    //TP changed to 50 from 10
             }
 
             // Continue to loop while we've not received anything (provided
