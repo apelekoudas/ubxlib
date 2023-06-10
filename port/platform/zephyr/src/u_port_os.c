@@ -74,7 +74,7 @@
 #include "u_port_os.h"
 #include "u_port_private.h"
 
-#include <zephyr.h>
+#include <zephyr/kernel.h>
 
 /* ----------------------------------------------------------------
  * COMPILE-TIME MACROS

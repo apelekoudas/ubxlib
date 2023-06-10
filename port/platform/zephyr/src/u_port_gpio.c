@@ -30,9 +30,9 @@
 #include "u_port.h"
 #include "u_port_gpio.h"
 
-#include "zephyr.h"
-#include "device.h"
-#include "drivers/gpio.h"
+#include <zephyr/kernel.h>
+#include <zephyr/device.h>
+#include <zephyr/drivers/gpio.h>
 #include "version.h"
 
 /* ----------------------------------------------------------------
@@ -150,11 +150,19 @@ int32_t uPortGpioConfig(uPortGpioConfig_t *pConfig)
                 case U_PORT_GPIO_DRIVE_CAPABILITY_STRONG:
                 case U_PORT_GPIO_DRIVE_CAPABILITY_WEAK:
                 case U_PORT_GPIO_DRIVE_CAPABILITY_WEAKEST:
+#if KERNEL_VERSION_MAJOR < 3
+                    // For some reason the gpio drive mode macros have
+                    // changed from being generic to soc specific in
+                    // Zephyr 3 and later, hence we can't easily
+                    // support them here.
                     flags |= GPIO_DS_DFLT_HIGH | GPIO_DS_DFLT_LOW;
+#endif                    
                     break;
                 case U_PORT_GPIO_DRIVE_CAPABILITY_STRONGEST:
+#if KERNEL_VERSION_MAJOR < 3                
                     // presuming that the alternative drive strength is stronger
                     flags |= GPIO_DS_ALT_HIGH | GPIO_DS_ALT_LOW;
+#endif                    
                     break;
                 default:
                     badConfig = true;

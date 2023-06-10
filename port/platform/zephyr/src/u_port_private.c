@@ -33,7 +33,7 @@
 #include "u_port_private.h"
 #include "u_port_event_queue.h"
 
-#include "zephyr.h"
+#include <zephyr/kernel.h>
 
 /* ----------------------------------------------------------------
  * COMPILE-TIME MACROS
