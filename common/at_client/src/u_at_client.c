@@ -2894,9 +2894,19 @@ void uAtClientCommandStart(uAtClientHandle_t atHandle,
         // Wait for delay period if required, constructed this way
         // to be safe if uPortGetTickTimeMs() wraps
         if (pClient->delayMs > 0) {
-            while (uPortGetTickTimeMs() - pClient->lastResponseStopMs < pClient->delayMs) {
-                uPortTaskBlock(10);
-            }
+            // TP changed, as it was not wrap-safe, at least not with int64_t time (failed after ~24 days)
+            // while (uPortGetTickTimeMs() - pClient->lastResponseStopMs < pClient->delayMs) {
+            //     uPortTaskBlock(10);
+            // }
+            do {
+                int32_t diff = uPortGetTickTimeMs() - pClient->lastResponseStopMs;
+                diff &= 0x7FFFFFF;  // clear sign bit
+                if( diff < pClient->delayMs) {
+                    uPortTaskBlock(10);
+                } else {
+                    break;
+                }
+            } while(1);
         }
 
         // Send the command, no delimiter at first

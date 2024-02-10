@@ -335,7 +335,11 @@ int32_t uPortUartInit()
                     break;
 #else
                 case 0:
+                  #if(DT_NODE_EXISTS(DT_NODELABEL(uart0)))
                     dev = DEVICE_DT_GET_OR_NULL(DT_NODELABEL(uart0));
+                  #else
+                      dev = DEVICE_DT_GET_OR_NULL(DT_ALIAS(gnssuart));
+                  #endif
                     break;
                 case 1:
                     dev = DEVICE_DT_GET_OR_NULL(DT_NODELABEL(uart1));
@@ -599,6 +603,7 @@ int32_t uPortUartWrite(int32_t handle, const void *pBuffer,
             uart_irq_tx_enable(gUartData[handle].pDevice);
             // UART write is async to wait here to make this function synchronous
             k_sem_take(&gUartData[handle].txSem, K_FOREVER);
+            // k_sem_take(&gUartData[handle].txSem, K_MSEC(200));// K_FOREVER);
 #else
             // When we have no interrupts we can block right here
             const unsigned char *pBufferUnsignedChar = (const unsigned char *) pBuffer;
